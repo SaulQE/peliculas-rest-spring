@@ -71,7 +71,7 @@ public class DirectorRestController
             return new ResponseEntity<>(directorDb,HttpStatus.FOUND);
         }
 
-        return new ResponseEntity<>("¡Error categoría no existe!",HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("¡Error Director no existe!",HttpStatus.NOT_FOUND);
     }
 
 }
