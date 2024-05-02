@@ -1,5 +1,6 @@
 package com.saul.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -11,6 +12,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "directores")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "directorId")
 public class Director implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -24,6 +26,7 @@ public class Director implements Serializable
     private String pais;
 
     @OneToMany(mappedBy = "director")
+    @JsonIgnore
     private Collection<Pelicula> itemsPeliculasDirector = new ArrayList<>();
 
     public Director(){}

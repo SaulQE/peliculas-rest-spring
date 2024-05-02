@@ -1,5 +1,7 @@
 package com.saul.entity;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "generos")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "generoId")
 public class Genero implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -19,6 +22,7 @@ public class Genero implements Serializable
     private String descripcion;
 
     @OneToMany(mappedBy = "genero")
+    @JsonIgnore
     private Collection<Pelicula> itemsPeliculasGenero = new ArrayList<>();
 
     public Genero(){}
