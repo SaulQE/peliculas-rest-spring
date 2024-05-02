@@ -1,5 +1,7 @@
 package com.saul.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -27,10 +29,14 @@ public class Pelicula implements Serializable
 
     @ManyToOne
     @JoinColumn(name = "director_id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("director_id")
     private Director director;
 
     @ManyToOne
     @JoinColumn(name = "genero_id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("genero_id")
     private Genero genero;
 
     public Pelicula(){}
