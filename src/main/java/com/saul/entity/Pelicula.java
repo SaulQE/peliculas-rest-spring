@@ -39,6 +39,9 @@ public class Pelicula implements Serializable
     @JsonProperty("genero_id")
     private Genero genero;
 
+    @OneToOne(mappedBy="pelicula")
+    private PeliculaDetalle peliculaDetalle;
+
     public Pelicula(){}
 
     public Pelicula(Integer peliculaId, String titulo, String protagonista, String idioma, LocalDate estreno, Integer durMinutos, Double puntuacion) {
