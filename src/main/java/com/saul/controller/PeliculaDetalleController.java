@@ -2,8 +2,12 @@ package com.saul.controller;
 
 import com.saul.entity.Genero;
 import com.saul.entity.PeliculaDetalle;
+import com.saul.mapper.PeliculaDetalleMapper;
+import com.saul.mapper.ReseñaMapper;
 import com.saul.service.GeneroService;
 import com.saul.service.PeliculaDetalleService;
+import com.saul.util.PeliculaDetalleUtil;
+import com.saul.util.ReseñaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +29,10 @@ public class PeliculaDetalleController
     public ResponseEntity<?> listar_GET()
     {
         Collection<PeliculaDetalle> detallesDb = peliculaDetalleService.findAll();
-        return new ResponseEntity<>(detallesDb, HttpStatus.OK);
+
+        Collection<PeliculaDetalleMapper> detalleMappers = PeliculaDetalleUtil.convertList(detallesDb);
+
+        return new ResponseEntity<>(detalleMappers, HttpStatus.OK);
     }
 
     @PostMapping("/detalle/register")
@@ -73,9 +80,10 @@ public class PeliculaDetalleController
     public ResponseEntity<?> buscar_GET(@PathVariable Integer detalleId)
     {
         PeliculaDetalle detalleDb = peliculaDetalleService.findById(detalleId);
+        PeliculaDetalleMapper detalleMapper = PeliculaDetalleUtil.convertEntity(detalleDb);
 
         if(detalleDb != null){
-            return new ResponseEntity<>(detalleDb,HttpStatus.FOUND);
+            return new ResponseEntity<>(detalleMapper,HttpStatus.FOUND);
         }
 
         return new ResponseEntity<>("¡Error detalle no existe!",HttpStatus.NOT_FOUND);

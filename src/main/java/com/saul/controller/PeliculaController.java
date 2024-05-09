@@ -1,7 +1,11 @@
 package com.saul.controller;
 
 import com.saul.entity.Pelicula;
+import com.saul.mapper.PeliculaMapper;
+import com.saul.mapper.ReseñaMapper;
 import com.saul.service.PeliculaService;
+import com.saul.util.PeliculaUtil;
+import com.saul.util.ReseñaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +28,10 @@ public class PeliculaController
     public ResponseEntity<?> listar_GET()
     {
         Collection<Pelicula> peliculasDb = peliculaService.findAll();
-        return new ResponseEntity<>(peliculasDb, HttpStatus.OK);
+
+        Collection<PeliculaMapper> peliculaMappers = PeliculaUtil.convertList(peliculasDb);
+
+        return new ResponseEntity<>(peliculaMappers, HttpStatus.OK);
     }
 
     @PostMapping("/pelicula/register")
@@ -71,9 +78,10 @@ public class PeliculaController
     public ResponseEntity<?> buscar_GET(@PathVariable Integer peliculaId)
     {
         Pelicula peliculaDb = peliculaService.findById(peliculaId);
+        PeliculaMapper peliculaMapper = PeliculaUtil.convertEntity(peliculaDb);
 
         if(peliculaDb != null) {
-            return new ResponseEntity<>(peliculaDb,HttpStatus.FOUND);
+            return new ResponseEntity<>(peliculaMapper,HttpStatus.FOUND);
         }
 
         return new ResponseEntity<>("¡Error, pelicula no existe!",HttpStatus.NOT_FOUND);

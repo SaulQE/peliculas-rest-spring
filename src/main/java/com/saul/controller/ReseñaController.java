@@ -1,13 +1,17 @@
 package com.saul.controller;
 
 import com.saul.entity.Reseña;
+import com.saul.mapper.ReseñaMapper;
 import com.saul.service.ReseñaService;
+import com.saul.util.ReseñaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 @RestController
 public class ReseñaController {
@@ -23,7 +27,10 @@ public class ReseñaController {
     public ResponseEntity<?> list(){
 
         var reseñas = reseñaService.findAll();
-        return new ResponseEntity<>(reseñas, HttpStatus.OK);
+
+        Collection<ReseñaMapper> reseñaMappers = ReseñaUtil.convertList(reseñas);
+
+        return new ResponseEntity<>(reseñaMappers, HttpStatus.OK);
     }
 
     @PostMapping("/reseña/create")
@@ -65,9 +72,10 @@ public class ReseñaController {
     @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_BASIC') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> findById(@PathVariable("reseñaId") Integer reseñaId){
         Reseña reseña = reseñaService.findById(reseñaId);
+        ReseñaMapper reseñaMapper = ReseñaUtil.convertEntity(reseña);
 
         if (reseña != null){
-            return new ResponseEntity<>(reseña, HttpStatus.FOUND);
+            return new ResponseEntity<>(reseñaMapper, HttpStatus.FOUND);
         }
         return new ResponseEntity<>("Reseña no encontrada", HttpStatus.NOT_FOUND);
     }
