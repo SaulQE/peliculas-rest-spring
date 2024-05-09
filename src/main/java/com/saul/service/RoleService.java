@@ -10,4 +10,5 @@ public interface RoleService {
     public abstract void delete(Integer roleId);
     public abstract Role findById(Integer roleId);
     public abstract Collection<Role> findAll();
+    public abstract Role findByName(String name);
 }
