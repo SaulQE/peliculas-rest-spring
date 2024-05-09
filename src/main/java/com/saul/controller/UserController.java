@@ -35,4 +35,9 @@ public class UserController
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @PostMapping("/user/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
+        return null;
+    }
+
 }

@@ -11,8 +11,6 @@ public class Reseña implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reseñaId;
-
-    private String critico;
     private Double puntuacion;
     private String comentario;
 
@@ -27,11 +25,12 @@ public class Reseña implements Serializable {
     public Reseña() {
     }
 
-    public Reseña(Integer reseñaId, String critico, Double puntuacion, String comentario) {
+    public Reseña(Integer reseñaId, Double puntuacion, String comentario, Pelicula pelicula, User user) {
         this.reseñaId = reseñaId;
-        this.critico = critico;
         this.puntuacion = puntuacion;
         this.comentario = comentario;
+        this.pelicula = pelicula;
+        this.user = user;
     }
 
     public Integer getReseñaId() {
@@ -40,14 +39,6 @@ public class Reseña implements Serializable {
 
     public void setReseñaId(Integer reseñaId) {
         this.reseñaId = reseñaId;
-    }
-
-    public String getCritico() {
-        return critico;
-    }
-
-    public void setCritico(String critico) {
-        this.critico = critico;
     }
 
     public Double getPuntuacion() {
@@ -72,5 +63,13 @@ public class Reseña implements Serializable {
 
     public void setPelicula(Pelicula pelicula) {
         this.pelicula = pelicula;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
