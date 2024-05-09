@@ -29,14 +29,10 @@ public class Pelicula implements Serializable
 
     @ManyToOne
     @JoinColumn(name = "director_id", nullable = false)
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("director_id")
     private Director director;
 
     @ManyToOne
     @JoinColumn(name = "genero_id", nullable = false)
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("genero_id")
     private Genero genero;
 
     @OneToOne(mappedBy="pelicula")

@@ -5,34 +5,37 @@ import com.saul.service.DirectorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/director")
-public class DirectorRestController
+public class DirectorController
 {
     @Autowired
     private DirectorService directorService;
 
-    public DirectorRestController(){}
+    public DirectorController(){}
 
-    @GetMapping("/listar")
+    @GetMapping("/directores")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> listar_GET()
     {
         Collection<Director> directoresDb = directorService.findAll();
         return new ResponseEntity<>(directoresDb, HttpStatus.OK);
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/director/register")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> registrar_POST(@RequestBody Director director)
     {
         directorService.insert(director);
         return new ResponseEntity<>("¡Director registrado!",HttpStatus.CREATED);
     }
 
-    @PutMapping("/editar/{directorId}")
+    @PutMapping("/director/update/{directorId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> editar_PUT(@RequestBody Director newDirector,@PathVariable Integer directorId)
     {
         Director directorDb = directorService.findById(directorId);
@@ -48,7 +51,8 @@ public class DirectorRestController
         return new ResponseEntity<>("¡Error Director no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/borrar/{directorId}")
+    @DeleteMapping("/director/delete/{directorId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> borrar_DELETE(@PathVariable Integer directorId)
     {
         Director directorDb = directorService.findById(directorId);
@@ -62,7 +66,8 @@ public class DirectorRestController
         return new ResponseEntity<>("¡Error Director no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscar/{directorId}")
+    @GetMapping("/director/buscar/{directorId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> buscar_GET(@PathVariable Integer directorId)
     {
         Director directorDb = directorService.findById(directorId);

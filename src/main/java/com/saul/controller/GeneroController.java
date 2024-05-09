@@ -5,34 +5,37 @@ import com.saul.service.GeneroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/genero")
-public class GeneroRestController
+public class GeneroController
 {
     @Autowired
     private GeneroService generoService;
 
-    public GeneroRestController(){}
+    public GeneroController(){}
 
-    @GetMapping("/listar")
+    @GetMapping("/generos")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> listar_GET()
     {
         Collection<Genero> generosDb = generoService.findAll();
         return new ResponseEntity<>(generosDb, HttpStatus.OK);
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/genero/register")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> registrar_POST(@RequestBody Genero genero)
     {
         generoService.insert(genero);
         return new ResponseEntity<>("¡Genero registrado!",HttpStatus.CREATED);
     }
 
-    @PutMapping("/editar/{generoId}")
+    @PutMapping("/genero/update/{generoId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> editar_PUT(@RequestBody Genero newGenero,@PathVariable Integer generoId)
     {
         Genero generoDb = generoService.findById(generoId);
@@ -48,7 +51,8 @@ public class GeneroRestController
         return new ResponseEntity<>("¡Error Genero no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/borrar/{generoId}")
+    @DeleteMapping("/genero/delete/{generoId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> borrar_DELETE(@PathVariable Integer generoId)
     {
         Genero generoDb = generoService.findById(generoId);
@@ -62,7 +66,8 @@ public class GeneroRestController
         return new ResponseEntity<>("¡Error Genero no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscar/{generoId}")
+    @GetMapping("/genero/buscar/{generoId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> buscar_GET(@PathVariable Integer generoId)
     {
         Genero generoDb = generoService.findById(generoId);

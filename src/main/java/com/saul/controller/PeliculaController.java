@@ -5,28 +5,30 @@ import com.saul.service.PeliculaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/pelicula")
-public class PeliculaRestController
+public class PeliculaController
 {
     @Autowired
     private PeliculaService peliculaService;
 
-    public PeliculaRestController(){}
+    public PeliculaController(){}
 
 
-    @GetMapping("/listar")
+    @GetMapping("/peliculas")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN') || hasAuthority('SCOPE_BASIC')")
     public ResponseEntity<?> listar_GET()
     {
         Collection<Pelicula> peliculasDb = peliculaService.findAll();
         return new ResponseEntity<>(peliculasDb, HttpStatus.OK);
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/pelicula/register")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> registrar_POST(@RequestBody Pelicula pelicula)
     {
         peliculaService.insert(pelicula);
@@ -34,7 +36,8 @@ public class PeliculaRestController
     }
 
 
-    @PutMapping("/editar/{peliculaId}")
+    @PutMapping("/pelicula/update/{peliculaId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> editar_PUT(@RequestBody Pelicula newPelicula, @PathVariable Integer peliculaId)
     {
         Pelicula peliculaDb = peliculaService.findById(peliculaId);
@@ -48,7 +51,8 @@ public class PeliculaRestController
         return new ResponseEntity<>("¡Error, pelicula no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/borrar/{peliculaId}")
+    @DeleteMapping("/pelicula/delete/{peliculaId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN')")
     public ResponseEntity<?> borrar_DELETE(@PathVariable Integer peliculaId)
     {
         Pelicula peliculaDb = peliculaService.findById(peliculaId);
@@ -62,7 +66,8 @@ public class PeliculaRestController
         return new ResponseEntity<>("¡Error, pelicula no existe!",HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscar/{peliculaId}")
+    @GetMapping("pelicula/buscar/{peliculaId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN') || hasAuthority('SCOPE_BASIC')")
     public ResponseEntity<?> buscar_GET(@PathVariable Integer peliculaId)
     {
         Pelicula peliculaDb = peliculaService.findById(peliculaId);

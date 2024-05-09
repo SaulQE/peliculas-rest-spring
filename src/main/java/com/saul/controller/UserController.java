@@ -53,7 +53,7 @@ public class UserController
     }
 
     @DeleteMapping("/user/delete/{userId}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN')")
     public ResponseEntity<?> delete(@PathVariable("userId") Integer userId)
     {
         User user = userService.findById(userId);
