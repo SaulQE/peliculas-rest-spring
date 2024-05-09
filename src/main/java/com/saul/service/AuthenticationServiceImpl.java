@@ -41,17 +41,17 @@ public class AuthenticationServiceImpl implements AuthenticationService
         var now = Instant.now();
         var expiresIn = 300L;
 
-        var scope = user.get().getRoles()
+        var scopes = user.get().getRoles()
                 .stream()
                 .map(Role::getName)
-                .collect(Collectors.joining(""));
+                .collect(Collectors.toList());
 
         var claims = JwtClaimsSet.builder()
                 .issuer("mybackend")
                 .subject(user.get().getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiresIn))
-                .claim("scope",scope)
+                .claim("scope",scopes)
                 .build();
 
         var JwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

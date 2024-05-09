@@ -42,6 +42,7 @@ public class SecurityConfig
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST,"/register").permitAll()
                         .antMatchers(HttpMethod.POST,"/login").permitAll()
+
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 // Configura el servidor de recursos OAuth2
