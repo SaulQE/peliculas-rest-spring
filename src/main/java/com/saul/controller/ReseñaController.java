@@ -61,4 +61,15 @@ public class ReseñaController {
         return new ResponseEntity<>("Reseña no encontrada", HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/reseña/buscar/{reseñaId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_DBA', 'SCOPE_ADMIN') || hasAuthority('SCOPE_BASIC') || hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<?> findById(@PathVariable("reseñaId") Integer reseñaId){
+        Reseña reseña = reseñaService.findById(reseñaId);
+
+        if (reseña != null){
+            return new ResponseEntity<>(reseña, HttpStatus.FOUND);
+        }
+        return new ResponseEntity<>("Reseña no encontrada", HttpStatus.NOT_FOUND);
+    }
+
 }

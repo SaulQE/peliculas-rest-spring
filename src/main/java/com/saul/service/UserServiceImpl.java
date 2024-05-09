@@ -5,6 +5,7 @@ import com.saul.entity.User;
 import com.saul.repository.RoleRepository;
 import com.saul.repository.UserRepository;
 import com.saul.util.Values;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,19 +30,53 @@ public class UserServiceImpl implements UserService
 
     @Override
     @Transactional
-    public void insert(User user) {
+    public void insert(User user)
+    {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+        for (Role role : user.getRoles()) {
+            Role existingRole = roleRepository.findById(role.getRoleId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role no encontrado"));
+            roles.add(existingRole);
+        }
+        user.setRoles(roles);
+
         userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void update(User user) {
-        userRepository.save(user);
+        // Busca el usuario existente
+        User existingUser = userRepository.findById(user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        BeanUtils.copyProperties(user, existingUser, "userId", "roles");
+        existingUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        // Actualiza los roles del usuario
+        Set<Role> roles = new HashSet<>();
+        for (Role role : user.getRoles()) {
+            Role existingRole = roleRepository.findById(role.getRoleId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role no encontrado"));
+            roles.add(existingRole);
+        }
+        existingUser.setRoles(roles);
+
+        // Guarda el usuario actualizado
+        userRepository.save(existingUser);
     }
 
     @Override
     @Transactional
     public void delete(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        user.getRoles().clear();
+        userRepository.save(user);
+
         userRepository.deleteById(userId);
     }
 
