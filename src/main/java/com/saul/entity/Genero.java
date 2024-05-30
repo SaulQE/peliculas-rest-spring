@@ -9,7 +9,6 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "generos")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "generoId")
 public class Genero implements Serializable
 {
     private static final long serialVersionUID = 1L;

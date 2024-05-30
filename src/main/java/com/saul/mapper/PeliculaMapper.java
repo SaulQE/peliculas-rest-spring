@@ -1,46 +1,24 @@
-package com.saul.entity;
+package com.saul.mapper;
+import com.saul.entity.Pelicula;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
-import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "peliculas")
-public class Pelicula implements Serializable
-{
-    private static final long serialVersionUID=1L;
+public class PeliculaMapper {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer peliculaId;
-
     private String titulo;
     private String protagonista;
     private String idioma;
-    @DateTimeFormat(pattern="yyyy-MM-dd",iso=ISO.DATE)
     private LocalDate estreno;
     private Integer durMinutos;
     private Double puntuacion;
+    private Integer directorId;
+    private Integer generoId;
 
-    @ManyToOne
-    @JoinColumn(name = "director_id", nullable = false)
-    private Director director;
+    public PeliculaMapper() {
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "genero_id", nullable = false)
-    private Genero genero;
-
-    @OneToOne(mappedBy="pelicula")
-    private PeliculaDetalle peliculaDetalle;
-
-    public Pelicula(){}
-
-    public Pelicula(Integer peliculaId, String titulo, String protagonista, String idioma, LocalDate estreno, Integer durMinutos, Double puntuacion) {
+    public PeliculaMapper(Integer peliculaId, String titulo, String protagonista, String idioma, LocalDate estreno, Integer durMinutos, Double puntuacion, Integer directorId, Integer generoId) {
         this.peliculaId = peliculaId;
         this.titulo = titulo;
         this.protagonista = protagonista;
@@ -48,6 +26,14 @@ public class Pelicula implements Serializable
         this.estreno = estreno;
         this.durMinutos = durMinutos;
         this.puntuacion = puntuacion;
+        this.directorId = directorId;
+        this.generoId = generoId;
+    }
+
+    public PeliculaMapper(Pelicula pelicula) {
+        this(pelicula.getPeliculaId(), pelicula.getTitulo(), pelicula.getProtagonista(),
+                pelicula.getIdioma(), pelicula.getEstreno(), pelicula.getDurMinutos(), pelicula.getPuntuacion(),
+                pelicula.getDirector().getDirectorId(), pelicula.getGenero().getGeneroId());
     }
 
     public Integer getPeliculaId() {
@@ -106,19 +92,19 @@ public class Pelicula implements Serializable
         this.puntuacion = puntuacion;
     }
 
-    public Director getDirector() {
-        return director;
+    public Integer getDirectorId() {
+        return directorId;
     }
 
-    public void setDirector(Director director) {
-        this.director = director;
+    public void setDirectorId(Integer directorId) {
+        this.directorId = directorId;
     }
 
-    public Genero getGenero() {
-        return genero;
+    public Integer getGeneroId() {
+        return generoId;
     }
 
-    public void setGenero(Genero genero) {
-        this.genero = genero;
+    public void setGeneroId(Integer generoId) {
+        this.generoId = generoId;
     }
 }

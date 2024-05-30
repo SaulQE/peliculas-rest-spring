@@ -1,47 +1,72 @@
 package com.saul.security;
 
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
-@SuppressWarnings("deprecation")
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
+// Habilita la seguridad web y la seguridad a nivel de método
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfig
 {
+    // Claves públicas y privadas para la codificación y decodificación de JWT
+    @Value("${jwt.public.key}")
+    private RSAPublicKey publicKey;
+    @Value("${jwt.private.key}")
+    private RSAPrivateKey privateKey;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("royer").password("{noop}r123").roles("USER");
-        auth.inMemoryAuthentication().withUser("franklin").password("{noop}f123").roles("USER");
-        auth.inMemoryAuthentication().withUser("mafer").password("{noop}m123").roles("ADMIN");
-        auth.inMemoryAuthentication().withUser("saul").password("{noop}s123").roles("ADMIN", "DBA");
+    @Bean // Configura el filtro de seguridad
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers(HttpMethod.POST,"/register").permitAll()
+                        .antMatchers(HttpMethod.POST,"/login").permitAll()
+
+                        .anyRequest().authenticated())
+                .csrf(csrf -> csrf.disable())
+                // Configura el servidor de recursos OAuth2
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
     }
 
-    protected void configure(HttpSecurity http) throws Exception
-    {
-        http.authorizeRequests()
+    @Bean // Decodificador de JWT
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+    }
 
-                .antMatchers("/pelicula/listar","/pelicula/buscar/*")
-                .access("hasRole('USER') or hasRole('ADMIN') or (hasRole('ADMIN') and hasRole('DBA'))")
+    @Bean // Codificador de JWT
+    public JwtEncoder jwtEncoder() {
+        JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
+        var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwks);
+    }
 
-                .antMatchers("/pelicula/registrar","/pelicula/editar/*")
-                .access("hasRole('ADMIN') or (hasRole('ADMIN') and hasRole('DBA'))")
-
-                .antMatchers("/pelicula/borrar/*")
-                .access("hasRole('ADMIN') and hasRole('DBA')");
-
-        //Autenticación basica
-        http.authorizeRequests().and()
-                .httpBasic();
-        //sesiones únicas
-        http.authorizeRequests().and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        //por ser app rest se desabilita
-        http.authorizeRequests().and()
-                .csrf().disable();
+    @Bean // Codificador de contraseñas
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
